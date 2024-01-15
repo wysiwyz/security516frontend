@@ -42,3 +42,29 @@
     - 如果authStatus為Auth，就顯示 dashboard 與 logout，若不為Auth則顯示notices與其他連結
 7. `app.request.interceptor.ts` 用來攔截送到後端的請求
     - 從 sessionStorage 取得 userdetails
+
+## 06-014
+1. 接續後端 step#6，修改 `login.component.ts`
+2. 為了能讀取cookie，要引入 `import { getCookie } from 'typescript-cookie`
+3. 要確定 `package.json` 裡面有這個依賴
+4. 取得名稱為`XSRF-TOKEN`的cookie並將其存進session storage
+   ```javascript
+    validateUser(loginForm: NgForm) {
+        this.loginService.validateLoginDetails(this.model).subscribe(
+        responseData => {
+            this.model = <any> responseData.body;
+            let xsrf = getCookie('XSRF-TOKEN')!;
+            window.sessionStorage.setItem("XSRF-TOKEN", xsrf);
+            this.model.authStatus = 'AUTH';
+            window.sessionStorage.setItem("userdetails",JSON.stringify(this.model));
+            this.router.navigate(['dashboard']);
+        });
+    }
+   ```
+5. 在 `app.request.interceptor.ts` 加入
+   ```javascript
+    let xsrf = sessionStorage.getItem('XSRF-TOKEN');
+    if (xsrf) {
+        httpHeaders = httpHeaders.append('X-XSRF-TOKEN', xsrf);
+    }
+   ```
