@@ -33,7 +33,10 @@ export class DashboardService {
   }
 
   saveMessage(contact : Contact){
-    return this.http.post(environment.rooturl + AppConstants.CONTACT_API_URL,contact,{ observe: 'response'});
+    // 10-006 practicing PreFilter annotation: set request as contact array
+    var contacts = [];
+    contacts.push(contact);
+    return this.http.post(environment.rooturl + AppConstants.CONTACT_API_URL,contacts,{ observe: 'response' });
   }
 
 }
